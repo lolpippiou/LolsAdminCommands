@@ -1,0 +1,28 @@
+-- / Library \ --
+
+local MessageRequest = game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest
+local GameMt = getrawmetatable(game)
+local OldNameCall = GameMt.__namecall
+local Prefix = ">"
+function SetPrefix(p)
+	if not string.len(p) == 1 then return end
+	Prefix = p
+end
+
+setreadonly(GameMt, false)
+
+GameMt.__namecall = newcclosure(function(Self, ...)
+    local Args = {...}
+    local NamecallMethod = getnamecallmethod()
+	
+	function MakeCommand(input, output, script)
+		if not checkcaller() and Self == MessageRequest and NamecallMethod == "FireServer" and Args[1] == Prefix.. and Args[2] == "All" then
+			loadstring(script)()
+			return game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(Prefix..input.."                                                                                                                                              {OUTPUT}"..output, "All")
+		end
+	end
+
+    return OldNameCall(Self, ...)
+end)
+
+setreadonly(GameMt, true)
